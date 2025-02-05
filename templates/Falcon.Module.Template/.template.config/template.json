@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Natarajan Ganapathi",
+  "classifications": ["Falcon", "WebApi", "Module"],
+  "identity": "Falcon.Module.Template",
+  "name": "Falcon Web Api Module",
+  "description": "Falcon Web Api Module",
+  "sourceName": "Falcon.Module.Template",
+  "shortName": "falcon-module",
+  "tags": {
+    "language": "C#",
+    "framework": "Falcon",
+    "type": "project"
+  },
+  "preferNameDirectory": true,
+  "symbols": {
+    "TargetFramework": {
+      "type": "parameter",
+      "description": "Target Framework to be used for the project",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net9.0"
+        }
+      ],
+      "defaultValue": "net9.0",
+      "replaces": "{TargetFramework}"
+    },
+    "RootNamespace": {
+      "type": "parameter",
+      "description": "Root Namespace",
+      "datatype": "string",
+      "defaultValue": "Falcon",
+      "replaces": "{RootNamespace}"
+    },
+    "ModuleName":{
+      "type": "parameter",
+      "description": "Module Name",
+      "datatype": "string",
+      "defaultValue": "Module",
+      "replaces": "{ModuleName}"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!IncludeDevAppSettings)",
+          "exclude": [
+            "Falcon.Module.Template/appsettings.Development.json"
+        ]
+        }
+      ]
+    }
+  ]
+}
