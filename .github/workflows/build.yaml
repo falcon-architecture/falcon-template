@@ -1,0 +1,201 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - "feature/*"
+    paths-ignore: [".github"]
+  pull_request:
+    branches:
+      - "main"
+    paths-ignore: [".github"]
+  release:
+    types: [released, prereleased, deleted]
+  workflow_dispatch:
+    inputs:
+      tasks:
+        description: "Tasks to Run"
+        required: true
+        type: string
+        default: "build,codeql,sonarqube,docfx,github-publish,nuget-publish"
+      debug:
+        description: "Debug Mode"
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [9.0.x]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: falcon-architecture/gh-actions
+          ref: main
+          path: gh-actions
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Dotnet Application Task
+        uses: ./gh-actions/dotnet/build
+        with:
+          solution-path: ./Falcon.sln
+          test-solution-path: ./tests/Falcon.Tests.sln
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+  codeql:
+    if: ${{ github.event.inputs.tasks == 'codeql' }}
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      matrix:
+        dotnet-version: [9.0.x]
+        languages: ["csharp"]
+    env:
+      ACTIONS_STEP_DEBUG: ${{ github.event.inputs.debug }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: falcon-architecture/gh-actions
+          ref: main
+          path: gh-actions
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: CodeQL Analysis Task
+        uses: ./gh-actions/dotnet/codeql
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+          solution-path: ./Falcon.sln
+          test-solution-path: ./tests/Falcon.Tests.sln
+          languages: ${{ matrix.languages }}
+
+  sonarqube:
+    if: ${{ github.event.inputs.tasks == 'sonarqube' }}
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        languages: ["csharp"]
+        dotnet-version: ["9.0.x"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: falcon-architecture/gh-actions
+          ref: main
+          path: gh-actions
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: SonarQube Analysis Task
+        uses: ./gh-actions/dotnet/sonarqube
+        with:
+          solution-path: ./Falcon.sln
+          test-solution-path: ./tests/Falcon.Tests.sln
+          dotnet-version: ${{ matrix.dotnet-version }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-project-key: "falcon-architecture_falcon-net"
+          sonar-organization: "falcon-architecture"
+          host-url: "https://sonarcloud.io"
+          sonar-token: ${{ secrets.FALCON_SONAR_TOKEN }}
+          inclusions: "src/**"
+          verbose: ${{ github.event.inputs.debug }}
+
+  docfx:
+    if: ${{ github.event.inputs.tasks == 'docfx' }}
+    name: DocFx Documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    strategy:
+      matrix:
+        languages: ["csharp"]
+        dotnet-version: ["9.0.x"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: falcon-architecture/gh-actions
+          ref: main
+          path: gh-actions
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: DocFx Documentation Task
+        uses: ./gh-actions/dotnet/docfx
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          solution-path: ./Falcon.sln
+          dotnet-version: ${{ matrix.dotnet-version }}
+          docfx-json-path: ./docfx/docfx.json
+          publish-dir: docs
+
+  github-publish:
+    needs: build
+    if: ${{ github.event_name == 'release' && github.event.action == 'prereleased' && github.event.inputs.tasks == 'github-publish' }}
+    name: Publish Artifacts to GitHub
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [9.0.x]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/checkout@v4
+        with:
+          repository: falcon-architecture/gh-actions
+          ref: main
+          path: gh-actions
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to GitHub Packages Task
+        uses: ./gh-actions/dotnet/publish/github
+        with:
+          solution-path: ./Falcon.sln
+          dotnet-version: ${{ matrix.dotnet-version }}
+          github-api-key: ${{ secrets.GH_PUBLISH_TOKEN }}
+          github-publish-action: ${{github.event.action}}
+          git-user: natarajanganapathi
+          git-email: natarajanmca11@outlook.com
+          version: ${{github.event.release.tag_name}}
+          bumped-version-push: true
+          branch: main
+
+  nuget-publish:
+    needs: build
+    if: ${{ github.event_name == 'release' && github.event.action == 'released' && github.event.inputs.tasks == 'nuget-publish'}}
+    name: Publish Artifacts to NuGet
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [9.0.x]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: falcon-architecture/gh-actions
+          ref: main
+          path: gh-actions
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to Nuget Packages Task
+        uses: ./gh-actions/dotnet/publish/nuget
+        with:
+          solution-path: ./Falcon.sln
+          dotnet-version: ${{ matrix.dotnet-version }}
+          nuget-api-key: ${{ secrets.FALCON_NUGET_API_KEY }}
+          nuget-publish-action: ${{github.event.action}}
+          git-user: natarajanganapathi
+          git-email: natarajanmca11@outlook.com
+          version: ${{github.event.release.tag_name}}
+          bumped-version-push: false
+          branch: main

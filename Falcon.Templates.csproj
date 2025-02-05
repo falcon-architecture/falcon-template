@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <PackageType>Template</PackageType>
     <PackageVersion>0.0.1-alpha.0</PackageVersion>
@@ -8,7 +7,7 @@
     <Authors>Natarajan Ganapathi</Authors>
     <Description>This is Falcon project templates</Description>
     <PackageTags>dotnet-new;templates</PackageTags>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
