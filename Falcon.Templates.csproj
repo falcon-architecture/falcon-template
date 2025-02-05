@@ -1,24 +1,53 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Title>Falcon Architecture Templates</Title>
     <PackageType>Template</PackageType>
-    <PackageVersion>0.0.1-alpha.0</PackageVersion>
-    <PackageId>Falcon.Templates</PackageId>
-    <Title>Falcon Dotnet Project Templates</Title>
-    <Authors>Natarajan Ganapathi</Authors>
-    <Description>This is Falcon project templates</Description>
-    <PackageTags>dotnet-new;templates</PackageTags>
+    <Version>0.0.1-alpha.0</Version>
+    <Description>Falcon Architecture Templates</Description>
     <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <Authors>Natarajan Ganapathi</Authors>
+    <PackageId>Falcon.Templates</PackageId>
+    <PackageDescription></PackageDescription>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/falcon-architecture/falcon-template.git</RepositoryUrl>
+    <PackageIcon>falcon.jpg</PackageIcon>
+    <PackageTags>dotnet-new;templates;falcon;</PackageTags>
+
+    <!-- Enable Source Link -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <EnableSourceLink>true</EnableSourceLink>
+
+    <!-- Deterministic build -->
+    <Deterministic>true</Deterministic>
+
+    <!-- Additional compiler flags -->
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <DebugType>embedded</DebugType>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <RootNamespace>Falcon.Templates</RootNamespace>
+    <AssemblyName>Falcon.Templates</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="./resources/LICENSE.txt" Pack="true" PackagePath="\" />
+    <None Include="./resources/falcon.jpg" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;" />
     <Compile Remove="**\*" />
   </ItemGroup>
-
 </Project>
