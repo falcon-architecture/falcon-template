@@ -33,7 +33,7 @@
       "defaultValue": "Falcon",
       "replaces": "{RootNamespace}"
     },
-    "ModuleName":{
+    "ModuleName": {
       "type": "parameter",
       "description": "Module Name",
       "datatype": "string",
@@ -43,14 +43,7 @@
   },
   "sources": [
     {
-      "modifiers": [
-        {
-          "condition": "(!IncludeDevAppSettings)",
-          "exclude": [
-            "Falcon.Module.Template/appsettings.Development.json"
-        ]
-        }
-      ]
+      "modifiers": []
     }
   ]
 }

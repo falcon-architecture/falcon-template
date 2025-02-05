@@ -4,7 +4,7 @@ add:
 pack:
 	dotnet pack	
 
-install:	
+install: pack
 	dotnet new install ./bin/Release/*.nupkg --force
 
 uninstall:	

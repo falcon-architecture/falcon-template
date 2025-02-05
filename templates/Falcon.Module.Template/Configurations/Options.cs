@@ -2,15 +2,15 @@ namespace {RootNamespace}.{ModuleName}.Configurations;
 
 public class {ModuleName}Options
 {
-    public required string Property1 { get; set; }
-
+    public required string ApiPrefix { get; set; }
+    
     public class Builder
     {
-        private readonly {ModuleName}Options _options = new {ModuleName}Options();
+        private readonly {ModuleName}Options _options = new {ModuleName}Options(){ ApiPrefix = string.Empty };
 
-        public Builder Property1(string property1)
+        public Builder ApiPrefix(string apiPrefix)
         {
-            _options.Property1 = property1;
+            _options.ApiPrefix = apiPrefix;
             return this;
         }
 
