@@ -5,16 +5,15 @@ public class { ModuleName }HealthChecks: IHealthCheck
     public{ ModuleName }HealthChecks() { }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
-    {   bool isHealthy = true;
-        // Add your health check logic here
-        if (isHealthy)
+    {   
+        try
         {
-            throw new NotImplementedException();
+            // Add your health check logic here
+            return HealthCheckResult.Healthy("<> server is healthy");
         }
         catch(Exception exception)
         {
             return HealthCheckResult.Unhealthy(exception.Message, exception);
         }
-        return HealthCheckResult.Healthy("Successfully connected");
     }
 }
