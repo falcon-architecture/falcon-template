@@ -34,13 +34,13 @@ public static class ServiceCollectionExtensions
         return services.AddScoped<,>(); // Add your services here
     }
 
-    public static IApplicationBuilder Use{ ModuleName }Middelwares(IApplicationBuilder app)
+    public static IServiceProvider Use{ ModuleName }Middelwares(IServiceProvider serviceProvider)
     {
-        return app;
+        return serviceProvider;
     }
 
-    public static IApplicationBuilder Use{ ModuleName }Module(IApplicationBuilder app)
+    public static IServiceProvider Use{ ModuleName }Module(IServiceProvider serviceProvider)
     {
-        return app;
+        return serviceProvider;
     }
 }
